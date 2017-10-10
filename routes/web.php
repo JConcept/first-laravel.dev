@@ -24,11 +24,7 @@ Route::get('/', function () {
 
     /* 3 */
     $name = 'Laravel project 1';
-    $tasks = [
-        'First task',
-        'Second',
-        'Third'
-    ];
+    $tasks = DB::table('tasks')->get() ;// on remplace notre tableau par le contenu de notre SGBD
     return view('welcome', compact('name', 'tasks' /*, ...*/ ));
 });
 

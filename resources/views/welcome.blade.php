@@ -83,7 +83,8 @@
                 </div>
                 <ul style='text-align: left; font-family: sans-serif;'>
                     @foreach ($tasks as $task)
-                        <li>{{$task}}</li>
+                        <li>{{$task->body}}</li> 
+                        <!-- on doit rajouter ->body, car on utilise une SGBD -->
                     @endforeach
                 </ul>
 
