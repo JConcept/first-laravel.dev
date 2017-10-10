@@ -21,10 +21,15 @@ Route::get('/', function () {
 
     /* 2 */
     // return view('welcome')->with('name', 'Laravel project 1' /* ... */);
-    
+
     /* 3 */
     $name = 'Laravel project 1';
-    return view('welcome', compact('name' /*, ...*/ ));
+    $tasks = [
+        'First task',
+        'Second',
+        'Third'
+    ];
+    return view('welcome', compact('name', 'tasks' /*, ...*/ ));
 });
 
 Auth::routes();

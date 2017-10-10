@@ -81,6 +81,11 @@
                 <div class="title m-b-md">
                     My first <?= $name ?>
                 </div>
+                <ul style='text-align: left; font-family: sans-serif;'>
+                    @foreach ($tasks as $task)
+                        <li>{{$task}}</li>
+                    @endforeach
+                </ul>
 
                 <div class="links">
                     <a href="https://laravel.com/docs">Documentation</a>
