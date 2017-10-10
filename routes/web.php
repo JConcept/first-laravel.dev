@@ -12,10 +12,15 @@
 */
 
 Route::get('/', function () {
-    return view('welcome', [
-        'name' => 'Laravel project 1'
-        /* on passe des variables */
-    ]);
+    /* SOLUTIONS POUR PASSER DES VARIABLES */
+    /* 1 */
+    // return view('welcome', [
+    //     'name' => 'Laravel project 1'
+    //     /* on passe des variables */
+    // ]);
+
+    /* 2 */
+    return view('welcome')->with('name', 'Laravel project 1' /* ... */);
 });
 
 Auth::routes();
