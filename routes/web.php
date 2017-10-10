@@ -24,8 +24,13 @@ Route::get('/', function () {
 
     /* 3 */
     $name = 'Laravel project 1';
-    $tasks = DB::table('tasks')->get() ;// on remplace notre tableau par le contenu de notre SGBD
+    $tasks = DB::table('tasks')->get() ; // on remplace notre tableau par le contenu de notre SGBD
     return view('welcome', compact('name', 'tasks' /*, ...*/ ));
+});
+Route::get('/tasks/{id}', function ($id) {
+    $name = 'Task search';
+    $task = DB::table('tasks')->find($id) ;
+    return view('tasks.show', compact('name', 'task' /*, ...*/ ));
 });
 
 Auth::routes();
