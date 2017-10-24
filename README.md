@@ -122,9 +122,14 @@ down -> maintenance
 up -> maintenance achevée
 _____
 make:
-controller -> pour ajouter des controlleurs d'affichage de route |=> se trouvera dans ``App\Http\Controllers`` 
--m -> pour ajouter également le modèle
--r -> données, on utilise des bases de données le CREUD et va générer les bonnes méthodes dans le fichier php dans le controlleur
+*   controller -> pour ajouter des controlleurs d'affichage de route |=> se trouvera dans ``App\Http\Controllers`` 
+    *   -m -> pour ajouter également le modèle
+    *   -r -> données, on utilise des bases de données le CREUD et va générer les bonnes méthodes dans le fichier php dans le controlleur
+
+*   model -> pour faire un modèle
+    *   -mc -> ajoutera la migration et le controlleur
+
+*   migration ... --create ... -> 1: create_X_table | 2: X || pour créer une table de la SGBD
 
 > Créer ``HomeController.php`` dans : ``App\Http\Controllers`` avec les resources dont on a besoin (CREUD) 
 ``` GIT BASH
