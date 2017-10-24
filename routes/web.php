@@ -1,5 +1,9 @@
 <?php
 
+Route::get('/', 'PostsController@index');
+
+
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -37,9 +41,9 @@
 // });
 
 // Faire un controlleur :
-Route::get('/tasks', 'TasksController@index');
-Route::get('/tasks/{id}', 'TasksController@show');
+// Route::get('/tasks', 'TasksController@index');
+// Route::get('/tasks/{id}', 'TasksController@show');
 
-Auth::routes();
+// Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+// Route::get('/home', 'HomeController@index')->name('home');
