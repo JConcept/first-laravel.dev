@@ -75,7 +75,7 @@ mysql -uroot -p
 
 > Créer une base de donnée.
 ```MySQL
-create database first.dev
+create database blog
 ```
 
 > Éditer le fichier /.env et /config/database.php
@@ -83,7 +83,7 @@ create database first.dev
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=first.dev
+DB_DATABASE=blog
 DB_USERNAME=root
 DB_PASSWORD=root
 ```
@@ -130,116 +130,6 @@ make:
     *   -mc -> ajoutera la migration et le controlleur
 
 *   migration ... --create ... -> 1: create_X_table | 2: X || pour créer une table de la SGBD
-
-> Créer ``HomeController.php`` dans : ``App\Http\Controllers`` avec les resources dont on a besoin (CREUD) 
-``` GIT BASH
-php artisan make:controller HomeController -r
-```
-> Sur la fonction index, on retourne une vue et on lui passe des variables
-``` PHP : \App\Http\Controllers\HomeController.php
-    public function index()
-    {
-        $variable = "hello";
-        return view('Home',['variable' => $variable]);
-    }
-```
-> OU en utilisant la fonction ``compact()``
-``` PHP : \App\Http\Controllers\HomeController.php
-    public function index()
-    {
-        $variable = "hello";
-        return view('Home', compact('variable'));
-    }
-```
-
-> On appelle le controlleur ``HomeController`` et on lui demande de lancer la fonction ``create``. Ici on va ajouter un nouvel item à la SGBD.
-``` PHP : /routes/Web.php
-    Route::get('/add-project', 'HomeController@create');
-```
-
-> On ajoute la fonction create et on lui dit de retourner une vue
-``` PHP : \App\Http\Controllers\HomeController.php
-    public function create()
-    {
-        return view('project.create-project');
-    }
-```
-
-> Notre vue contiendra donc un formulaire où on retrouvera dans la balise form :
-``` HTML
-<form action="{{ url('/store-project')}}" method="post">
-```
-Cela permet d'envoyer en post les données (sans les faire passer dans l'url) et le traitement se fera dans ``.../store-project`` qui aura une route qui lui sera définie et un controlleur qui envera le traitement à la SGBD.
-
-> Il faut ajouter notre modèle dans le controlleur
-``` PHP : \App\Http\Controllers\HomeController.php
-use App\Project;
-```
-
-> Ensuite on va créer le modèle. Il permettra de définir de quelle façon on interagit avec la SGBD. Il sera créé dans : ``/app/Project.php``
-``` GIT BASH
-php artisan make:model Project 
-```
-
-> Ensuite on lui ajoute le SoftDeletes à notre modèle
-``` PHP : /app/Project.php
-<?php
-namespace App;
-
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-
-class Project extends Model
-{
-    use SoftDeletes;
-}
-```
-
-> On crée la route qui appelle la fonction store de notre controlleur
-``` PHP : /routes/Web.php
-Route::post('/store-project', 'HomeController@store');
-```
-
-> On regarde ce que va nous retourner php à la soumission de notre formulaire
-``` PHP : \App\Http\Controllers\HomeController.php
-    public function store(Request $request)
-    {
-        var_dump($request);
-        // OU : dd($request);
-    }
-```
-``var_dump`` est plus complet, ``dd`` est l'équivalent en fonction laravel
-
-> On ajoute la fonction create
-``` PHP : \App\Http\Controllers\HomeController.php
-    public function store(Request $request)
-    {
-        $request;
-        $newProject =[
-            'title' => $request->title,
-            'description' => $request->description
-        ];
-        $projet = new Project;
-    }
-```
-
-> Mais on peu également l'écrire comme ceci et on rajoute à la fin une redirection vers la page d'acceuil
-``` PHP : \App\Http\Controllers\HomeController.php
-    public function store(Request $request)
-    {
-        $request;
-        $projet = new Project;
-        $projet->title = $request->title;
-        $projet->description = $request->description;
-        $projet->save();
-        return redirect()->route('home');
-    }
-```
-
-> On doit modifier la route pour la redirection en ajoutant un nom à la route
-``` PHP : /routes/Web.php
-Route::get('/', 'HomeController@index') -> name('home');
-```
 
 
 > 
