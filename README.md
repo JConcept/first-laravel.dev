@@ -1,21 +1,22 @@
 # Apprentissage de Laravel
 Dans le cadre de la CondingSchool de la [Molengeek](molengeek.com), nous apprenons à utiliser Laravel.
+Vous y retrouverez mon évolution sur ce super Framework step by step.
 
-## Configurer notre serveur
+## Cours d'initiation Coding School
 D'abords on crée le projet laravel :
 ``` GIT BASH
-laravel new first.dev
+laravel new first-laravel.dev
 ```
 
 ### Faire un virtualhost
 #### Windows
-Dossier ``first.dev`` dans le www de Wamp.
+Dossier ``first-laravel.dev`` dans le www de Wamp.
 
 ##### Modifier le fichier dans windows
 Ensuite accéder à ``C:\Windows\System32\drivers\etc`` et modifier le fichier ``hosts`` de windows.
 ```HOST WINDOWS
-127.0.0.1       first.dev
-::1             first.dev
+127.0.0.1       first-laravel.dev
+::1             first-laravel.dev
 ```
 __/!\ Ne pas oublier d'avoir lancé en administrateur le bloc note ou votre éditeur.__
 
@@ -23,10 +24,10 @@ __/!\ Ne pas oublier d'avoir lancé en administrateur le bloc note ou votre édi
 ``C:\wamp64\bin\apache\apache2.4.23\conf\extra`` et ensuite le fichier ``httpd-vhosts.conf``
 ```APACHE CONF
 <VirtualHost *:80>
-	ServerName first.dev
-	DocumentRoot c:/wamp64/www/first.dev/public
-	ServerAlias www.first.dev
-	<Directory  "c:/wamp64/www/first.dev">
+	ServerName first-laravel.dev
+	DocumentRoot c:/wamp64/www/first-laravel.dev/public
+	ServerAlias www.first-laravel.dev
+	<Directory  "c:/wamp64/www/first-laravel.dev">
 		Allow from All
 		Options +Indexes +Includes +FollowSymLinks +MultiViews
 		AllowOverride All
@@ -45,9 +46,9 @@ php artisan key:generate
 cf : https://github.com/JConcept/Web-Server-Config
 >   "Créer le dossier de votre premier site."
 
-## Introduction à Laravel
+### Introduction à Laravel
 
-### Arboressence de fichiers :
+#### Arboressence de fichiers :
 -   app -> modèle
 -   config -> réglages SGBD
 -   database/migrations -> création de tables en mysql
@@ -57,17 +58,15 @@ cf : https://github.com/JConcept/Web-Server-Config
     -    /vue -> générateur de template en vue ``blade``
 -   routes -> app get : ici ce sera route get (quel est l'url qu'on me demande)
 
-### Quel requête demandons nous (url) -> la route (routes)
+#### Quel requête demandons nous (url) -> la route (routes)
 Dans le fichier route/web.php :
 Route (/)
     - view : welcome ==> resources/view/welcome.blade.php
 
-tuto laravel : https://laracasts.com/series/laravel-from-scratch-2017
 
+### Fonctionnement de Laravel
 
-## Fonctionnement de Laravel
-
-### Interagir avec une SGBD
+#### Interagir avec une SGBD
 > Entrer dans Mysql
 ``` GIT BASH
 mysql -uroot -p
@@ -117,7 +116,7 @@ php artisan migrate:refresh
 php artisan migrate:rollback
 ```
 
-### php artisan
+#### php artisan
 down -> maintenance
 up -> maintenance achevée
 _____
@@ -131,43 +130,173 @@ make:
 
 *   migration ... --create ... -> 1: create_X_table | 2: X || pour créer une table de la SGBD
 
+### Déployement de Laravel sur un serveur
 
-> 
+1. Mettre les fichiers via ftp, git, ...
+2. Lancer ``composer install`` (installer composer si pas déjà présent)
+3. \+ ``composer dumpautoload -o``
+3. Éditer le fichier .env (avec vim)
+4. Lancer ``php artisan key:generate``
+(``sudo service nginx restart``)
+
+
+## Tutoriel Laracast step by step
+
+Voici mes notes __récapitulative__ du [tutoriel laracast](https://laracasts.com/series/laravel-from-scratch-2017)
+
+> Créer le controlleur, le modèle et la migration ``Posts`` _(on renomera le modèle en Post sans le "s")_
 ``` GIT BASH
-php artisan 
+php artisan make:model -mc Posts
+```
+
+> Ajouter des champs à notre base de données
+``` PHP : database/migrations/AAAA_MM_JJ_HHMMSS_create_posts_table
+            $table->string('title');
+            $table->text('body');
+```
+
+> Générer les bases de données
+``` GIT BASH
+php artisan migrate
+```
+
+> Entrer la route (adresse url) et renvoyer vers une fonction de notre controlleur
+``` PHP : routes/web.php
+Route::get('/', 'PostsController@index');
+```
+
+> Ajouter la fonction ``index`` à notre controlleur ``PostsController``. À l'intérieur de l'extentiation du controlleur
+``` PHP : app/Http/Controllers/PostsController.php
+    public function index()
+    {
+        return view('posts.index');
+    }
+```
+
+> Ajouter nos fichiers de vues blade. On va se baser sur une page web déjà créée que l'on va "découper". On va se baser sur le [blog proposé par bootstrap](http://getbootstrap.com/docs/4.0/examples/blog/) 
+``` 
+On va le structurer de cette manière :
+    - partials -> footer, header, side bar (composants répétitifs)
+    - layouts -> "template" général de pages
+    - posts -> même nom que notre modèle, controlleur et vues, là ou on place le contenu des pages
+Pour voir le résultat allez dans ``resources/views``
+```
+
+> Créer la page principale blade (index dans le dossier ``posts``) -> que l'on appelle en faisant un return dans le fichier controlleur
+```  PHP BLADE TEMPLATE : resources/views/posts/index.blade.php
+@extends ('layouts.task')
+@section ('content')
+	 <div class="col-sm-8 blog-main">
+        Contenu HTML
+	</div><!-- /.blog-main -->
+	@include ('partials.side')
+@endsection
+```
+
+> Créer une page pour pouvoir ajouter des articles avec un formulaire dans notre base de données en POST  
+> |-> Céer deux routes, la ``GET`` pour afficher le formulaire et la ``POST`` pour pouvoir exécuter le traitement dans la base de données via le modèle ``Post.php``
+``` PHP : routes/web.php
+Route::get('/posts/create', 'PostsController@create');
+Route::post('/posts', 'PostsController@store');
+```
+
+### Stocker des éléments dans une base de données
+> Éditer le modèle  
+Il y a trois solutions possible pour y arriver. La troisième sera abordée plus tard :
+1. On passe chaque élément à récupérer (correspondant au ``name="X"`` dans le html (html de la vue blade))
+2. On utilise la variable laravel ``$guarded`` qui récupère automatiquement tous les champs, plus besoin de les nommer
+3. On crée un "template" de modèle que l'on pourra extencier (on le fait plus tard)
+``` PHP : app/post.php
+<?php
+
+namespace App;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Tests extends Model
+{
+    // Solution 1 :
+    // protected $fillable = ['title', 'body'];
+    
+    // Solution 2 :
+    protected $guarded = [];
+}
+```
+
+> Au controlleur ajouter les fonctions ``create´´ et ´´store``  
+Pour voir ce que récupère Laravel quand on envoit les données, il y a plusieurs solutions possibles en fonction des besoins :
+- on peut lancer la fonction propre à Laravel ``dd(request()->all());``
+- toujours à cette même fonction, sous forme de tableau, lui demander quels champs il faut afficher ``dd(request(['title', 'body']));``
+- ou on peut utiliser la fonction native à php pour avoir __plus de détails__ ``var_dump(request()->all());`` (on peut également lui faire un request comme ci-dessus)  
+À nouveau, pour le stockage des éléments
+``` PHP : app/Http/Controllers/PostsController.php
+    public function create()
+    {
+        return view('posts.create');
+    }
+    public function store()
+    {
+        // dd(request()->all());
+        // dd(request(['title', 'body']));
+        // var_dump(request()->all());
+        
+        First :
+        // Récupérer les données via request()
+        $post = new Post;
+        $post->title = request('title');
+        $post->body = request('body');
+        
+        // Enregistrer dans la SGBD
+        $post->save();
+        END first
+        
+        // SI solution 1 dans : app/post.php
+        // Récupérer les données via request() + sauvegarder dans la base de donnée via le modèle post.php
+        Post::create([
+            'title' => request('title'),
+            'body' => request('body')
+        ]);
+
+        SI solution 2 dans: app/post.php + sauvegarder dans la base de donnée via le modèle post.php
+        Récupérer les données via request()
+        Post::create(request()->all());
+        
+        // Rediriger
+        return redirect('/');
+    }
 ```
 
 > 
-``` GIT BASH
-php artisan 
+``` PHP
+
 ```
 
 > 
-``` GIT BASH
-php artisan 
+``` PHP
+
 ```
 
 > 
-``` GIT BASH
-php artisan 
+``` PHP
+
 ```
 
 > 
-``` GIT BASH
-php artisan 
+``` PHP
+
 ```
 
 > 
-``` GIT BASH
-php artisan 
+``` PHP
+
 ```
 
 > 
-``` GIT BASH
-php artisan 
+``` PHP
+
 ```
 
 > 
-``` GIT BASH
-php artisan 
+``` PHP
+
 ```
